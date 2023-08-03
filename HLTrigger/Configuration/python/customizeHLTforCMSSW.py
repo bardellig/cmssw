@@ -250,6 +250,11 @@ def checkHLTfor43774(process):
 
     return process
 
+def customizeHLTFor42454(process):
+    """Ensure TrackerAdditionalParametersPerDetRcd ESProducer is run"""
+    process.load("Geometry.TrackerGeometryBuilder.TrackerAdditionalParametersPerDet_cfi")
+    return process
+
 # CMSSW version specific customizations
 def customizeHLTforCMSSW(process, menuType="GRun"):
 
@@ -266,5 +271,7 @@ def customizeHLTforCMSSW(process, menuType="GRun"):
 
     process = customizeHLTfor43885(process)
     process = checkHLTfor43774(process)
+    if menuType in ["GRun","HIon","PIon","PRef"]:
+        process = customizeHLTFor42454(process)
 
     return process
