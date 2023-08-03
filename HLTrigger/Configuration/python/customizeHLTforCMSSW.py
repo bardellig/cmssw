@@ -253,6 +253,7 @@ def customizeHLTfor44054(process):
             delattr(producer, 'AXOL1TLModelVersion')
     return process
     
+
 # CMSSW version specific customizations
 def customizeHLTforCMSSW(process, menuType="GRun"):
 
@@ -268,6 +269,8 @@ def customizeHLTforCMSSW(process, menuType="GRun"):
     # process = customiseFor12718(process)
 
     process = checkHLTfor43774(process)
+    if menuType in ["GRun","HIon","PIon","PRef"]:
+        process = customizeHLTFor42454(process)
 
     # customizes AXOL1TL condition in the L1 menu 
     process = customizeHLTfor44054(process)
