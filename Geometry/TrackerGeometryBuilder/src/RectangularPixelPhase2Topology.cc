@@ -52,7 +52,6 @@ std::pair<float, float> RectangularPixelPhase2Topology::pixel(const LocalPoint& 
   int iybin = 0 ; //int(newybin);
   float fractionY = 0; //newybin - iybin;
   int iybin0 = 0;
-  int numROC = 0;
   float mpY = 0.;
 
   if(( newybin >= m_pitchy*(m_ncols/2-1)) && ( newybin < (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC ))){ 
@@ -60,8 +59,9 @@ std::pair<float, float> RectangularPixelPhase2Topology::pixel(const LocalPoint& 
 	  iybin0 = iybin;
 	  fractionY = (newybin - m_pitchy*(m_ncols/2-1))/m_BIG_PIX_PITCH_Y;
   }else if(newybin >= (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC )){
-	  iybin = int(newybin - (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC )/m_pitchy) + m_ncols/2 -1 + m_ncols/m_COLS_PER_ROC ;
-	  iybin0 = iybin - m_ncols/2; //gbardell: shuld be good also for 3d or double just scale everything to half sensor 
+	  iybin = int(newybin - (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC )/m_pitchy) + m_ncols/2 -1 + m_ncols/m_COLS_PER_ROC;
+	  iybin0 = iybin - m_ncols/2; //gbardell: shuld be good also for 3d or double just scale everything to half sensor
+	  iybin += 1.; //@EM temporary fix
 	  fractionY = (newybin - (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC + iybin0*m_pitchy))/m_pitchy;
   }else{
 	  iybin = int(newybin/m_pitchy);
@@ -122,8 +122,9 @@ std::pair<float, float> RectangularPixelPhase2Topology::pixel(const LocalPoint& 
 	  ixbin0 = ixbin;
 	  fractionX = (newxbin - m_pitchx*(m_nrows/2-2))/m_BIG_PIX_PITCH_X;
   }else if(( newxbin >= (m_pitchx*(m_nrows/2 - 2) + 2*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC ))){
-	  ixbin = int(newybin - (m_pitchy*(m_nrows/2 - 2) + 2*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC )/m_pitchx) + m_nrows/2 -2 + 2*m_nrows/m_ROWS_PER_ROC ;	  
+	  ixbin = int(newybin - (m_pitchx*(m_nrows/2 - 2) + 2*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC )/m_pitchx) + m_nrows/2 -2 + 2*m_nrows/m_ROWS_PER_ROC ;	  
 	  ixbin0 = ixbin - m_nrows/2;
+	  ixbin += 2.; //@EM temporary fix
 	  fractionX = (newxbin - (m_pitchx*(m_nrows/2-2) + 2*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC  + ixbin0*m_pitchx))/m_pitchx;
   }else{
 	  ixbin = int(newxbin/m_pitchx);
@@ -196,7 +197,7 @@ LocalPoint RectangularPixelPhase2Topology::localPosition(const MeasurementPoint&
 
 //--------------------------------------------------------------------
 //
-// measuremet to local transformation for X coordinate
+// measurement to local transformation for X coordinate
 // X coordinate is in the ROC row number direction
 float RectangularPixelPhase2Topology::localX(const float mpx) const {
   int binoffx = int(mpx);                  // truncate to int
@@ -204,13 +205,13 @@ float RectangularPixelPhase2Topology::localX(const float mpx) const {
   float local_pitchx = m_pitchx;           // defaultpitch
   int ispix_secondhalf_x = 0;
 
-  if (binoffx > (m_nrows/2 -2 + 2*m_nrows/m_COLS_PER_ROC)) {  // ROC 1 - handles x on edge cluster
+  if (binoffx >= (m_nrows/2 -2 + 2*m_nrows/m_ROWS_PER_ROC)) {  // ROC 1 - handles x on edge cluster
     binoffx = binoffx - 2*m_nrows/m_ROWS_PER_ROC;
     ispix_secondhalf_x = 1;
-  } else if ( (m_nrows/2 -2) < binoffx < (m_nrows/2 -2 + 2*m_nrows/m_ROWS_PER_ROC)) {  // ROC 1
+  } else if ( ((m_nrows/2 -2) <= binoffx) && (binoffx < (m_nrows/2 -2 + 2*m_nrows/m_ROWS_PER_ROC)) ) {  // ROC 1
     binoffx = m_nrows/2 -2;
     fractionX = mpx - float(m_nrows/2 -2);
-    local_pitchx = m_BIG_PIX_PITCH_X ;
+    local_pitchx = m_BIG_PIX_PITCH_X;
   // else if (binoffx>=0) {       // ROC 0
   //  binoffx=binoffx+0;
   }
@@ -240,7 +241,7 @@ float RectangularPixelPhase2Topology::localX(const float mpx) const {
   return lpX;
 }
 
-// measuremet to local transformation for Y coordinate
+// measurement to local transformation for Y coordinate
 // Y is in the ROC column number direction
 float RectangularPixelPhase2Topology::localY(const float mpy) const {
   int binoffy = int(mpy);                  // truncate to int
@@ -248,13 +249,13 @@ float RectangularPixelPhase2Topology::localY(const float mpy) const {
   float local_pitchy = m_pitchy;           // defaultpitch
   int ispix_secondhalf_y = 0;
 
-  if (binoffy > (m_ncols/2 -1 + m_ncols/m_COLS_PER_ROC)) {  // ROC 1 - handles x on edge cluster
+  if (binoffy >= (m_ncols/2 -1 + m_ncols/m_COLS_PER_ROC)) {  // ROC 1 - handles x on edge cluster
     binoffy = binoffy- m_ncols/m_COLS_PER_ROC;
     ispix_secondhalf_y = 1;
-  } else if ( (m_ncols/2 -1) < binoffy < (m_ncols/2 -1 + m_ncols/m_COLS_PER_ROC)) {  // ROC 1
+  } else if ( ((m_ncols/2 -1) <= binoffy) && (binoffy < (m_ncols/2 -1 + m_ncols/m_COLS_PER_ROC)) ) {  // ROC 1
     binoffy = m_ncols/2 -1;
     fractionY = mpy - float(m_ncols/2 -1);
-    local_pitchy = m_BIG_PIX_PITCH_Y ;
+    local_pitchy = m_BIG_PIX_PITCH_Y;
   // else if (binoffx>=0) {       // ROC 0
   //  binoffx=binoffx+0;
   }
