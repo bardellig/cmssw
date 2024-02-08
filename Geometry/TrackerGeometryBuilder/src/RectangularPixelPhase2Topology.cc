@@ -54,19 +54,18 @@ std::pair<float, float> RectangularPixelPhase2Topology::pixel(const LocalPoint& 
   int iybin0 = 0;
   float mpY = 0.;
 
-  if(( newybin >= m_pitchy*(m_ncols/2-1)) && ( newybin < (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC ))){ 
-	  iybin = m_ncols/2 - 1 ;	  
-	  iybin0 = iybin;
-	  fractionY = (newybin - m_pitchy*(m_ncols/2-1))/m_BIG_PIX_PITCH_Y;
-  }else if(newybin >= (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC )){
-	  iybin = int(newybin - (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC )/m_pitchy) + m_ncols/2 -1 + m_ncols/m_COLS_PER_ROC;
-	  iybin0 = iybin - m_ncols/2; //gbardell: shuld be good also for 3d or double just scale everything to half sensor
-	  iybin += 1.; //@EM temporary fix
-	  fractionY = (newybin - (m_pitchy*(m_ncols/2 - 1) + m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC + iybin0*m_pitchy))/m_pitchy;
+  if(( newybin >= m_pitchy*(m_ncols/2-m_BIG_PIX_PER_ROC_Y)) && ( newybin < (m_pitchy*(m_ncols/2 - m_BIG_PIX_PER_ROC_Y) + m_BIG_PIX_PER_ROC_Y*m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC ))){
+          iybin = m_ncols/2 - m_BIG_PIX_PER_ROC_Y ;
+          iybin0 = iybin;
+          fractionY = (newybin - m_pitchy*(m_ncols/2-m_BIG_PIX_PER_ROC_Y))/m_BIG_PIX_PITCH_Y;
+  }else if(( newybin >= (m_pitchy*(m_ncols/2 - m_BIG_PIX_PER_ROC_Y) + m_BIG_PIX_PER_ROC_Y*m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC ))){
+  	  iybin = int((newybin - (m_pitchy*(m_ncols/2 - m_BIG_PIX_PER_ROC_Y) + m_BIG_PIX_PER_ROC_Y*m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC ))/m_pitchy) + m_ncols/2 -m_BIG_PIX_PER_ROC_Y + m_BIG_PIX_PER_ROC_Y*m_ncols/m_COLS_PER_ROC ;
+  	  iybin0 = iybin - m_ncols/2;
+  	  fractionY = (newybin - (m_pitchy*(m_ncols/2-m_BIG_PIX_PER_ROC_Y) + m_BIG_PIX_PER_ROC_Y*m_BIG_PIX_PITCH_Y*m_ncols/m_COLS_PER_ROC  + (iybin0-m_BIG_PIX_PER_ROC_Y)*m_pitchy))/m_pitchy;
   }else{
-	  iybin = int(newybin/m_pitchy);
-	  iybin0 = iybin;
-	  fractionY = newybin/m_pitchy - iybin;
+          iybin = int(newybin/m_pitchy);
+          iybin0 = iybin;
+          fractionY = newybin/m_pitchy - iybin;
   }
   
   mpY = fractionY + iybin; 
@@ -117,20 +116,20 @@ std::pair<float, float> RectangularPixelPhase2Topology::pixel(const LocalPoint& 
   float mpX = 0.;
 // gbardell: in principle this -2 or 2 times mBiGPIX_PITCH can be replaced with n_BigPix_per_rocX which is now passed in the header, do you think it's worth it? 
 
-  if(( newxbin >= m_pitchx*(m_nrows/2-2)) && ( newxbin < (m_pitchx*(m_nrows/2 - 2) + 2*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC ))){ 
-	  ixbin = m_nrows/2 - 2 ;	  
-	  ixbin0 = ixbin;
-	  fractionX = (newxbin - m_pitchx*(m_nrows/2-2))/m_BIG_PIX_PITCH_X;
-  }else if(( newxbin >= (m_pitchx*(m_nrows/2 - 2) + 2*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC ))){
-	  ixbin = int(newybin - (m_pitchx*(m_nrows/2 - 2) + 2*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC )/m_pitchx) + m_nrows/2 -2 + 2*m_nrows/m_ROWS_PER_ROC ;	  
-	  ixbin0 = ixbin - m_nrows/2;
-	  ixbin += 2.; //@EM temporary fix
-	  fractionX = (newxbin - (m_pitchx*(m_nrows/2-2) + 2*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC  + ixbin0*m_pitchx))/m_pitchx;
+  if(( newxbin >= m_pitchx*(m_nrows/2-m_BIG_PIX_PER_ROC_X)) && ( newxbin < (m_pitchx*(m_nrows/2 - m_BIG_PIX_PER_ROC_X) + m_BIG_PIX_PER_ROC_X*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC ))){
+          ixbin = m_nrows/2 - m_BIG_PIX_PER_ROC_X ;
+          ixbin0 = ixbin;
+          fractionX = (newxbin - m_pitchx*(m_nrows/2-m_BIG_PIX_PER_ROC_X))/m_BIG_PIX_PITCH_X;
+  }else if(( newxbin >= (m_pitchx*(m_nrows/2 - m_BIG_PIX_PER_ROC_X) + m_BIG_PIX_PER_ROC_X*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC ))){
+          ixbin = int((newxbin - (m_pitchx*(m_nrows/2 - m_BIG_PIX_PER_ROC_X) + m_BIG_PIX_PER_ROC_X*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC ))/m_pitchx) + m_nrows/2 -m_BIG_PIX_PER_ROC_X + m_BIG_PIX_PER_ROC_X*m_nrows/m_ROWS_PER_ROC ;
+          ixbin0 = ixbin - m_nrows/2;
+          fractionX = (newxbin - (m_pitchx*(m_nrows/2-m_BIG_PIX_PER_ROC_X) + m_BIG_PIX_PER_ROC_X*m_BIG_PIX_PITCH_X*m_nrows/m_ROWS_PER_ROC  + (ixbin0-m_BIG_PIX_PER_ROC_X)*m_pitchx))/m_pitchx;
   }else{
-	  ixbin = int(newxbin/m_pitchx);
-	  ixbin0 = ixbin;
-	  fractionX = newxbin/m_pitchx - ixbin;
+          ixbin = int(newxbin/m_pitchx);
+          ixbin0 = ixbin;
+          fractionX = newxbin/m_pitchx - ixbin;
   }
+  
   mpX= fractionX + ixbin;
   
 #ifdef EDM_ML_DEBUG
