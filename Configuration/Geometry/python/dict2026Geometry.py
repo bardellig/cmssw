@@ -356,7 +356,7 @@ trackerDict = {
         ],
         "era" : "phase2_tracker, phase2_3DPixels, trackingPhase2PU140",
     },
-        "T36" : {
+        "T39" : {
         1 : [
             'Geometry/TrackerCommonData/data/PhaseII/trackerParameters.xml',
             'Geometry/TrackerCommonData/data/pixfwdCommon.xml',
