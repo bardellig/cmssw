@@ -115,8 +115,6 @@ public:
   bool isItBigPixelInY(const int iybin) const override {
     int iybin0 = iybin % 52;
     return ((iybin0 == 0) | (iybin0 == 51));
-    // constexpr int bigYIndeces[]{0,51,52,103,104,155,156,207,208,259,260,311,312,363,364,415,416,511};
-    // return *std::lower_bound(std::begin(bigYIndeces),std::end(bigYIndeces),iybin) == iybin;
   }
   float getPixelFractionInX(const int ixbin) const override {
     if ((ixbin == 79) | (ixbin == 80)) {

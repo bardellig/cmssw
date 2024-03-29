@@ -189,9 +189,6 @@ float RectangularPixelTopology::localX(const float mpx) const {
     binoffx = binoffx + 0;
     local_pitchx *= 2;
   }
-  // else if (binoffx>=0) {       // ROC 0
-  //  binoffx=binoffx+0;
-  // }
 
 #ifdef EDM_ML_DEBUG
   if (binoffx < 0)  // too small
